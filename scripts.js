@@ -1,14 +1,4 @@
 
-const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    parent: 'container',
-    physics: { default: 'arcade', arcade: { debug: false } },
-    scene: SpaceShooter
-};
-
-const game = new Phaser.Game(config);
 
 class SpaceCombat extends Phaser.Scene{
     constructor(){
@@ -16,10 +6,19 @@ class SpaceCombat extends Phaser.Scene{
     }
 
     preload(){
-
+        this.load.image("asteroideGrande", "/assets/asteroide/asteroideGrande.png")
+        this.load.image('background', 'assets/background/background.png');
+        this.load.image('nave', 'assets/nave/naveJugador.png');
+        this.load.image('disparo', 'assets/municion/disparos.png');
     }
 
     create(){
+        // Posicion del background
+        this.add.image(500, 300, 'background').setScale(2).setOrigin(0.5,0.5);
+
+        //Posicion de la nave
+        this.nave = this.physics.add.image(400, 500, 'nave');
+        this.nave.setCollideWorldBounds(true);
 
     }
 
@@ -27,3 +26,14 @@ class SpaceCombat extends Phaser.Scene{
 
     }
 }
+
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    parent: 'container',
+    physics: { default: 'arcade', arcade: { debug: false } },
+    scene: SpaceCombat
+};
+
+const game = new Phaser.Game(config);
