@@ -6,7 +6,7 @@ class SpaceCombat extends Phaser.Scene{
     }
 
     preload(){
-        this.load.image("asteroideGrande", "/assets/asteroide/asteroideGrande.png")
+        this.load.image("asteroideGrande", "/assets/asteroides/asteroideGrande.png")
         this.load.image('background', 'assets/background/background.png');
         this.load.image('nave', 'assets/nave/naveJugador.png');
         this.load.image('disparo', 'assets/municion/disparos.png');
@@ -22,6 +22,17 @@ class SpaceCombat extends Phaser.Scene{
 
         // Obtiene los movimientos del teclado
         this.cursors = this.input.keyboard.createCursorKeys();
+
+        // Agrega fisicas a los asteroides
+        this.asteroides = this.physics.add.group();
+
+        // Genera los asteroides
+        this.time.addEvent({
+            delay: 1500,
+            callback: this.crearAsteroide,
+            callbackScope: this,
+            loop: true
+        });
     }
 
     update(){
@@ -43,6 +54,14 @@ class SpaceCombat extends Phaser.Scene{
         } else {
             this.nave.setVelocityY(0);
         }
+    }
+
+    // Crea los asteroides en un rango y velocidad aleatorias
+    crearAsteroide() {
+        let x = Phaser.Math.Between(50, 750);
+        let asteroide = this.asteroides.create(x, 0, "asteroideGrande").setScale(2);
+        asteroide.setVelocityY(Phaser.Math.Between(100, 200));
+        asteroide.setCollideWorldBounds(false);
     }
 }
 
