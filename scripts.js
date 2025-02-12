@@ -14,16 +14,35 @@ class SpaceCombat extends Phaser.Scene{
 
     create(){
         // Posicion del background
-        this.add.image(500, 300, 'background').setScale(2).setOrigin(0.5,0.5);
+        this.add.image(400, 300, 'background').setScale(2.5);
 
-        //Posicion de la nave
+        // Posicion de la nave
         this.nave = this.physics.add.image(400, 500, 'nave');
         this.nave.setCollideWorldBounds(true);
 
+        // Obtiene los movimientos del teclado
+        this.cursors = this.input.keyboard.createCursorKeys();
     }
 
     update(){
 
+        // Movimiento horizontal
+        if (this.cursors.left.isDown) {
+            this.nave.setVelocityX(-200); 
+        } else if (this.cursors.right.isDown) {
+            this.nave.setVelocityX(200); 
+        } else {
+            this.nave.setVelocityX(0);
+        }
+    
+        // Movimiento vertical
+        if (this.cursors.up.isDown) {
+            this.nave.setVelocityY(-200); 
+        } else if (this.cursors.down.isDown) {
+            this.nave.setVelocityY(200);
+        } else {
+            this.nave.setVelocityY(0);
+        }
     }
 }
 
