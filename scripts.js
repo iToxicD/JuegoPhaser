@@ -33,6 +33,18 @@ class SpaceCombat extends Phaser.Scene{
             callbackScope: this,
             loop: true
         });
+
+        // Disparos
+        this.disparos = this.physics.add.group();
+        // Colision de los disparos con los asteroides
+        this.physics.add.overlap(this.disparos, this.asteroides, this.destruirAsteroide, null, this);
+
+        // Sumar puntos por astoride destruido
+        this.score = 0;
+        this.scoreText = this.add.text(10, 10, "Puntuación: 0", { fontSize: "20px", fill: "#fff" });
+
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
     }
 
     update(){
@@ -54,6 +66,16 @@ class SpaceCombat extends Phaser.Scene{
         } else {
             this.nave.setVelocityY(0);
         }
+
+        const velocity = 200;
+        const { left, right } = this.cursors;
+
+        this.nave.setVelocityX((right.isDown ? velocity : 0) - (left.isDown ? velocity : 0));
+
+        // Disparar cuando se presiona la tecla espacio
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.disparar();
+        }
     }
 
     // Crea los asteroides en un rango y velocidad aleatorias
@@ -63,6 +85,21 @@ class SpaceCombat extends Phaser.Scene{
         asteroide.setVelocityY(Phaser.Math.Between(100, 200));
         asteroide.setCollideWorldBounds(false);
     }
+
+    disparar() {
+        let disparo = this.disparos.create(this.nave.x, this.nave.y - 20, "disparo");
+        disparo.setVelocityY(-300); // Velocidad del disparo hacia arriba
+    }
+
+    destruirAsteroide(disparo, asteroide) {
+        disparo.destroy();  // Elimina el disparo
+        asteroide.destroy(); // Elimina el asteroide
+    
+        // Aumenta la puntuación
+        this.score += 10;
+        this.scoreText.setText("Puntuación: " + this.score);
+    }
+    
 }
 
 const config = {
