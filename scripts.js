@@ -117,13 +117,3 @@ class SpaceCombat extends Phaser.Scene{
     }
 }
 
-const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    parent: 'container',
-    physics: { default: 'arcade', arcade: { debug: false } },
-    scene: SpaceCombat
-};
-
-const game = new Phaser.Game(config);
