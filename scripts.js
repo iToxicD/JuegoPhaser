@@ -1,5 +1,3 @@
-
-
 class SpaceCombat extends Phaser.Scene{
     constructor(){
         super({key: "SpaceCombat"});
@@ -28,7 +26,7 @@ class SpaceCombat extends Phaser.Scene{
 
         // Genera los asteroides
         this.time.addEvent({
-            delay: 1500,
+            delay: 1000, 
             callback: this.crearAsteroide,
             callbackScope: this,
             loop: true
@@ -39,15 +37,26 @@ class SpaceCombat extends Phaser.Scene{
         // Colision de los disparos con los asteroides
         this.physics.add.overlap(this.disparos, this.asteroides, this.destruirAsteroide, null, this);
 
-        // Sumar puntos por astoride destruido
+        // Colision de asteroide y la nave
+        this.physics.add.overlap(this.nave, this.asteroides, this.gameOver, null, this);
+
+        // Sumar puntos por asteroide destruido
         this.score = 0;
         this.scoreText = this.add.text(10, 10, "Puntuación: 0", { fontSize: "20px", fill: "#fff" });
 
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.reinicioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
+        this.gameOver = false;
     }
 
     update(){
+        if (this.gameOver) {
+            if (Phaser.Input.Keyboard.JustDown(this.reinicioKey)) {
+                this.scene.restart();
+            }
+            return;
+        }
 
         // Movimiento horizontal
         if (this.cursors.left.isDown) {
@@ -66,11 +75,6 @@ class SpaceCombat extends Phaser.Scene{
         } else {
             this.nave.setVelocityY(0);
         }
-
-        const velocity = 200;
-        const { left, right } = this.cursors;
-
-        this.nave.setVelocityX((right.isDown ? velocity : 0) - (left.isDown ? velocity : 0));
 
         // Disparar cuando se presiona la tecla espacio
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
@@ -99,7 +103,15 @@ class SpaceCombat extends Phaser.Scene{
         this.score += 10;
         this.scoreText.setText("Puntuación: " + this.score);
     }
-    
+
+    // Detiene el juego, las fisicas y pone la nave en rojo cuando ha colisionado con un asteroide
+    gameOver() {
+        this.gameOver = true;
+        this.physics.pause();
+        this.nave.setTint(0xff0000);
+        this.add.text(300, 250, "Eliminado", { fontSize: "40px", fill: "#ff0000" });
+        this.add.text(220, 300, "Presiona ENTER para reiniciar", { fontSize: "20px", fill: "#ffffff" });
+    }
 }
 
 const config = {
