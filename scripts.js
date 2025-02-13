@@ -25,7 +25,7 @@ class SpaceCombat extends Phaser.Scene{
         this.asteroides = this.physics.add.group();
 
         // Genera los asteroides
-        this.time.addEvent({
+        this.generarAsteroides = this.time.addEvent({
             delay: 1000, 
             callback: this.crearAsteroide,
             callbackScope: this,
@@ -34,6 +34,7 @@ class SpaceCombat extends Phaser.Scene{
 
         // Disparos
         this.disparos = this.physics.add.group();
+
         // Colision de los disparos con los asteroides
         this.physics.add.overlap(this.disparos, this.asteroides, this.destruirAsteroide, null, this);
 
@@ -42,7 +43,7 @@ class SpaceCombat extends Phaser.Scene{
 
         // Sumar puntos por asteroide destruido
         this.score = 0;
-        this.scoreText = this.add.text(10, 10, "Puntuación: 0", { fontSize: "20px", fill: "#fff" });
+        this.scoreText = this.add.text(10, 10, "Puntuación: 0", { fontSize: "20px", fill: "#fff" }).setDepth(1);
 
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.reinicioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -51,6 +52,7 @@ class SpaceCombat extends Phaser.Scene{
     }
 
     update(){
+        // Reinicia el juego al pulsar la tecla
         if (this.gameOver) {
             if (Phaser.Input.Keyboard.JustDown(this.reinicioKey)) {
                 this.scene.restart();
@@ -111,6 +113,7 @@ class SpaceCombat extends Phaser.Scene{
         this.nave.setTint(0xff0000);
         this.add.text(300, 250, "Eliminado", { fontSize: "40px", fill: "#ff0000" });
         this.add.text(220, 300, "Presiona ENTER para reiniciar", { fontSize: "20px", fill: "#ffffff" });
+        this.generarAsteroides.remove();
     }
 }
 
