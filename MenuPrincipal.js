@@ -6,7 +6,7 @@ class MenuPrincipal extends Phaser.Scene{
     preload(){
         this.load.image("background", "assets/background/background.png");
         this.load.image("botonStart", "assets/ui/botonStart.png")
-        this.load.image("botonControles", "assets/ui/botonStart.png")
+        this.load.image("botonControles", "assets/ui/botonControles.png")
 
     }
 
