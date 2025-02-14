@@ -4,10 +4,14 @@ class SpaceCombat extends Phaser.Scene{
     }
 
     preload(){
+        // Imagenes
         this.load.image("asteroideGrande", "/assets/asteroides/asteroideGrande.png")
         this.load.image('background', 'assets/background/background.png');
         this.load.image('nave', 'assets/nave/naveJugador.png');
         this.load.image('disparo', 'assets/municion/disparos.png');
+
+        // Audio
+        this.load.audio("disparoAudio", "/assets/audio/disparo.mp3")
     }
 
     create(){
@@ -34,6 +38,8 @@ class SpaceCombat extends Phaser.Scene{
 
         // Disparos
         this.disparos = this.physics.add.group();
+        // Audio disparo
+        this.disparoAudio = this.sound.add("disparoAudio");
 
         // Colision de los disparos con los asteroides
         this.physics.add.overlap(this.disparos, this.asteroides, this.destruirAsteroide, null, this);
@@ -95,6 +101,7 @@ class SpaceCombat extends Phaser.Scene{
     disparar() {
         let disparo = this.disparos.create(this.nave.x, this.nave.y - 20, "disparo");
         disparo.setVelocityY(-300); // Velocidad del disparo hacia arriba
+        this.disparoAudio.play();
     }
 
     destruirAsteroide(disparo, asteroide) {

@@ -4,7 +4,7 @@ const config = {
     height: 600,
     parent: 'container',
     physics: { default: 'arcade', arcade: { debug: false } },
-    scene: [MenuPrincipal, SpaceCombat] // Ambas escenas en la configuración
+    scene: [MenuPrincipal, SpaceCombat, Controles]
 };
 
 const game = new Phaser.Game(config);
