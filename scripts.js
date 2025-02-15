@@ -11,14 +11,18 @@ class SpaceCombat extends Phaser.Scene{
         this.load.image("nave", "assets/nave/naveJugador.png");
         this.load.image("disparo", "assets/municion/disparos.png");
         this.load.image("naveEnemiga", "assets/nave/naveEnemiga.png");
+        this.load.image("score", "assets/ui/uiScore.png");
+        this.load.image("reloj", "assets/ui/uiReloj.png");
 
         // Audio
         this.load.audio("disparoAudio", "/assets/audio/disparo.mp3")
     }
 
     create(){
-        // Posicion del background
+        // Posicion del de las imagenes
         this.add.image(400, 300, 'background').setScale(2.5);
+        this.add.image(80, 50, 'score').setScale(2);
+        this.add.image(675, 40, 'reloj').setScale(2);
 
         // Posicion de la nave
         this.nave = this.physics.add.image(400, 500, 'nave');
@@ -38,8 +42,10 @@ class SpaceCombat extends Phaser.Scene{
             loop: true
         });
 
+        // Fisicas a los enemigos
         this.enemigos = this.physics.add.group();
 
+        // Genera los enemigos
         this.generarEnemigos = this.time.addEvent({
             delay: 3000,
             callback: this.crearEnemigo,
@@ -63,15 +69,17 @@ class SpaceCombat extends Phaser.Scene{
 
         // Sumar puntos por asteroide destruido
         this.score = 0;
-        this.scoreText = this.add.text(10, 10, "0", { fontSize: "20px", fill: "#f80303" }).setDepth(1);
+        this.scoreText = this.add.text(70, 30, "0", { fontSize: "20px", fill: "#ffffff" }).setDepth(1);
 
+        // Teclas para disparar y reiniciar el juego
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.reinicioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         this.gameOver = false;
 
+        // Temporizador
         this.temporizador = 0;
-        this.tiempoJugado = this.add.text(650, 10, "Tiempo: 0",{ fontSize: "20px", fill: "#fff" }).setDepth(1);
+        this.tiempoJugado = this.add.text(700, 30, "0",{ fontSize: "20px", fill: "#fff" }).setDepth(1);
 
     }
 
@@ -109,7 +117,7 @@ class SpaceCombat extends Phaser.Scene{
 
         // Temporizador
         this.temporizador += delta / 1000;
-        this.tiempoJugado.setText(`Tiempo: ${this.temporizador.toFixed(1)}s`);
+        this.tiempoJugado.setText(`${this.temporizador.toFixed(1)}s`);
     }
 
     // Crea los asteroides en un rango y velocidad aleatorias
@@ -120,27 +128,30 @@ class SpaceCombat extends Phaser.Scene{
         asteroide.setCollideWorldBounds(false);
     }
 
+    // Crea los enemigos
     crearEnemigo() {
         let x = Phaser.Math.Between(50, 750);
         let enemigo = this.enemigos.create(x, 0, "naveEnemiga").setScale(2);
         enemigo.setVelocityY(Phaser.Math.Between(100, 200));
     }
 
+    // Crea el disparo del jugador
     disparar() {
         let disparo = this.disparos.create(this.nave.x, this.nave.y - 20, "disparo");
-        disparo.setVelocityY(-300); // Velocidad del disparo hacia arriba
+        disparo.setVelocityY(-300);
         this.disparoAudio.play();
     }
 
-    destruirAsteroide(disparo, asteroide, enemigos) {
-        disparo.destroy();  // Elimina el disparo
-        asteroide.destroy(); // Elimina el asteroide
-    
-        // Aumenta la puntuación
+    // Destruye los dispario y asteroides cuando colisionan y suma los puntos
+    destruirAsteroide(disparo, asteroide) {
+        disparo.destroy();
+        asteroide.destroy();
+
         this.score += 10;
         this.scoreText.setText("" + this.score);
     }
 
+    // Destruye el disparo, el enemigo y suma los puntos
     destruirEnemigo(disparo, enemigo) {
         disparo.destroy();
         enemigo.destroy();
