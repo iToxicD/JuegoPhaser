@@ -6,6 +6,7 @@ class SpaceCombat extends Phaser.Scene{
     preload(){
         // Imagenes
         this.load.image("asteroideGrande", "/assets/asteroides/asteroideGrande.png")
+        this.load.image("asteroideSmall", "/assets/asteroides/asteroide.png")
         this.load.image('background', 'assets/background/background.png');
         this.load.image('nave', 'assets/nave/naveJugador.png');
         this.load.image('disparo', 'assets/municion/disparos.png');
@@ -38,6 +39,7 @@ class SpaceCombat extends Phaser.Scene{
 
         // Disparos
         this.disparos = this.physics.add.group();
+
         // Audio disparo
         this.disparoAudio = this.sound.add("disparoAudio");
 
@@ -55,9 +57,13 @@ class SpaceCombat extends Phaser.Scene{
         this.reinicioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         this.gameOver = false;
+
+        this.temporizador = 0;
+        this.tiempoJugado = this.add.text(650, 10, "Tiempo: 0",{ fontSize: "20px", fill: "#fff" }).setDepth(1);
+        
     }
 
-    update(){
+    update(time,delta){
         // Reinicia el juego al pulsar la tecla
         if (this.gameOver) {
             if (Phaser.Input.Keyboard.JustDown(this.reinicioKey)) {
@@ -88,6 +94,10 @@ class SpaceCombat extends Phaser.Scene{
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.disparar();
         }
+
+        // Temporizador
+        this.temporizador += delta / 1000;
+        this.tiempoJugado.setText(`Tiempo: ${this.temporizador.toFixed(1)}s`);
     }
 
     // Crea los asteroides en un rango y velocidad aleatorias
@@ -119,7 +129,8 @@ class SpaceCombat extends Phaser.Scene{
         this.physics.pause();
         this.nave.setTint(0xff0000);
         this.add.text(300, 250, "Eliminado", { fontSize: "40px", fill: "#ff0000" });
-        this.add.text(220, 300, "Presiona ENTER para reiniciar", { fontSize: "20px", fill: "#ffffff" });
+        this.add.text(220, 300, `Has sobrevivido: ${this.temporizador.toFixed(1)} segundos`, { fontSize: "20px", fill: "#ffffff" });
+        this.add.text(220, 325, "Presiona ENTER para reiniciar", { fontSize: "20px", fill: "#ffffff" });
         this.generarAsteroides.remove();
     }
 }
