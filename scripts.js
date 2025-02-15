@@ -7,9 +7,10 @@ class SpaceCombat extends Phaser.Scene{
         // Imagenes
         this.load.image("asteroideGrande", "/assets/asteroides/asteroideGrande.png")
         this.load.image("asteroideSmall", "/assets/asteroides/asteroide.png")
-        this.load.image('background', 'assets/background/background.png');
-        this.load.image('nave', 'assets/nave/naveJugador.png');
-        this.load.image('disparo', 'assets/municion/disparos.png');
+        this.load.image("background", "assets/background/background.png");
+        this.load.image("nave", "assets/nave/naveJugador.png");
+        this.load.image("disparo", "assets/municion/disparos.png");
+        this.load.image("naveEnemiga", "assets/nave/naveEnemiga.png");
 
         // Audio
         this.load.audio("disparoAudio", "/assets/audio/disparo.mp3")
@@ -37,21 +38,32 @@ class SpaceCombat extends Phaser.Scene{
             loop: true
         });
 
+        this.enemigos = this.physics.add.group();
+
+        this.generarEnemigos = this.time.addEvent({
+            delay: 3000,
+            callback: this.crearEnemigo,
+            callbackScope: this,
+            loop: true
+        })
+
         // Disparos
         this.disparos = this.physics.add.group();
 
         // Audio disparo
         this.disparoAudio = this.sound.add("disparoAudio");
 
-        // Colision de los disparos con los asteroides
+        // Colision de los disparos con los asteroides y de los asteroides con la nave
         this.physics.add.overlap(this.disparos, this.asteroides, this.destruirAsteroide, null, this);
-
-        // Colision de asteroide y la nave
         this.physics.add.overlap(this.nave, this.asteroides, this.gameOver, null, this);
+
+        // Colision de las naves enemigad con la nave y los disparos con los enemigos
+        this.physics.add.overlap(this.nave, this.enemigos, this.gameOver,null, this);
+        this.physics.add.overlap(this.disparos, this.enemigos, this.destruirEnemigo,null, this);
 
         // Sumar puntos por asteroide destruido
         this.score = 0;
-        this.scoreText = this.add.text(10, 10, "Puntuación: 0", { fontSize: "20px", fill: "#fff" }).setDepth(1);
+        this.scoreText = this.add.text(10, 10, "0", { fontSize: "20px", fill: "#f80303" }).setDepth(1);
 
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.reinicioKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
@@ -60,7 +72,7 @@ class SpaceCombat extends Phaser.Scene{
 
         this.temporizador = 0;
         this.tiempoJugado = this.add.text(650, 10, "Tiempo: 0",{ fontSize: "20px", fill: "#fff" }).setDepth(1);
-        
+
     }
 
     update(time,delta){
@@ -108,19 +120,34 @@ class SpaceCombat extends Phaser.Scene{
         asteroide.setCollideWorldBounds(false);
     }
 
+    crearEnemigo() {
+        let x = Phaser.Math.Between(50, 750);
+        let enemigo = this.enemigos.create(x, 0, "naveEnemiga").setScale(2);
+        enemigo.setVelocityY(Phaser.Math.Between(100, 200));
+    }
+
     disparar() {
         let disparo = this.disparos.create(this.nave.x, this.nave.y - 20, "disparo");
         disparo.setVelocityY(-300); // Velocidad del disparo hacia arriba
         this.disparoAudio.play();
     }
 
-    destruirAsteroide(disparo, asteroide) {
+    destruirAsteroide(disparo, asteroide, enemigos) {
         disparo.destroy();  // Elimina el disparo
         asteroide.destroy(); // Elimina el asteroide
     
         // Aumenta la puntuación
         this.score += 10;
-        this.scoreText.setText("Puntuación: " + this.score);
+        this.scoreText.setText("" + this.score);
+    }
+
+    destruirEnemigo(disparo, enemigo) {
+        disparo.destroy();
+        enemigo.destroy();
+
+        // Aumentar la puntuación
+        this.score += 20;
+        this.scoreText.setText("" + this.score);
     }
 
     // Detiene el juego, las fisicas y pone la nave en rojo cuando ha colisionado con un asteroide
@@ -132,6 +159,7 @@ class SpaceCombat extends Phaser.Scene{
         this.add.text(220, 300, `Has sobrevivido: ${this.temporizador.toFixed(1)} segundos`, { fontSize: "20px", fill: "#ffffff" });
         this.add.text(220, 325, "Presiona ENTER para reiniciar", { fontSize: "20px", fill: "#ffffff" });
         this.generarAsteroides.remove();
+        this.generarEnemigos.remove();
     }
 }
 
